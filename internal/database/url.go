@@ -5,17 +5,13 @@ import (
 	"gorm.io/gorm"
 )
 
-func AddURL(db *gorm.DB, newUrl models.URL) error {
-  result := db.Create(&newUrl)
+func AddURL(db *gorm.DB, newURL models.URL) error {
+  result := db.Create(&newURL)
   return result.Error
 }
 
-func CheckIfExists(db *gorm.DB, original string) (string, error) {
+func CheckIfExists(db *gorm.DB, original string) string {
   var url models.URL
-  result := db.Where("original_url = ?", original).First(&url)
-  if result.Error == nil {
-    return url.OriginalURL, nil
-  }
-
-  return url.OriginalURL, result.Error
+  db.Where("original_url = ?", original).First(&url)
+  return url.OriginalURL
 }

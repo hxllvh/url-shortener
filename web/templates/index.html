@@ -9,6 +9,12 @@
         <input type="text" name="url" placeholder="Enter URL">
         <input type="submit" value="Shorten">
     </form>
-    <p>{{.ShortURL }}</p>
+
+    {{ if .ExistingURL }}
+    <p>This URL has already been shortened: {{ .ExistingURL }}</p>
+    {{ end }}
+    {{ if .ShortURL }}
+    <p>Short URL: {{ .ShortURL }}</p>
+    {{ end }}
 </body>
 </html>

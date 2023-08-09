@@ -14,35 +14,32 @@ func ShortenHandler(w http.ResponseWriter, r *http.Request) {
     http.NotFound(w, r)
     return
   }
-  originalURL := r.FormValue("url")
+
   tmpl, err := template.ParseFiles("web/templates/index.html")
   if err != nil {
     http.Error(w, err.Error(), http.StatusInternalServerError)
     return
   }
-  
-  shortURL := fmt.Sprintf("localhost:8080/%s", service.ShortenURL(originalURL))
 
   db, err := database.NewDB()
   if err != nil {
     http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
   }
 
-  url := models.URL{
-    OriginalURL: originalURL,
-    ShortURL:    shortURL,
+  dataURL := models.DataURL{
+    OriginalURL: r.FormValue("url"),
+    ShortURL: fmt.Sprintf("localhost:8080/%s", service.ShortenURL(r.FormValue("url"))),
   }
 
-  existingURL, err := database.CheckIfExists(db.DB, url.OriginalURL)
-  if err == nil {
-    http.Error(w, err.Error(), http.StatusUnprocessableEntity)
-    fmt.Fprintf(w, "This URL has already been shortened: %s", existingURL)
-  } else {
-    err = database.AddURL(db.DB, url)
-    if err != nil {
-      fmt.Println("no")
-    } else {
-      tmpl.Execute(w, url)
-    }
+  existingURL := database.CheckIfExists(db.DB, dataURL.OriginalURL)
+  if existingURL != "" {
+    dataURL.ExistingURL = existingURL
+    tmpl.Execute(w, dataURL)
+    return
   }
+  if err := database.AddURL(db.DB, models.URL{OriginalURL: dataURL.OriginalURL, ShortURL: dataURL.ShortURL}); err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+  }
+  tmpl.Execute(w, dataURL)
 }
