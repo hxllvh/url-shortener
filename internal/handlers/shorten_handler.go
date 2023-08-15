@@ -27,19 +27,25 @@ func ShortenHandler(w http.ResponseWriter, r *http.Request) {
     return
   }
 
+  originalURL := r.FormValue("url")
+  shortURL := fmt.Sprintf("localhost:8080/%s", service.ShortenURL(originalURL))
+  
   dataURL := models.DataURL{
-    OriginalURL: r.FormValue("url"),
-    ShortURL: fmt.Sprintf("localhost:8080/%s", service.ShortenURL(r.FormValue("url"))),
+    OriginalURL: originalURL,
+    ShortURL: shortURL,
+  }
+  mainURL := models.URL{
+    OriginalURL: originalURL,
+    ShortURL: shortURL,
   }
 
-  existingURL := database.CheckIfExists(db.DB, dataURL.OriginalURL)
-  if existingURL != "" {
-    dataURL.ExistingURL = existingURL
-    tmpl.Execute(w, dataURL)
-    return
-  }
-  if err := database.AddURL(db.DB, models.URL{OriginalURL: dataURL.OriginalURL, ShortURL: dataURL.ShortURL}); err != nil {
+  existingURL, err := db.AddURL(mainURL)
+  if err != nil {
     http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
+  } else if existingURL != "" {
+    dataURL.ExistingURL = existingURL
   }
+
   tmpl.Execute(w, dataURL)
 }
