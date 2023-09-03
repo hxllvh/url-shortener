@@ -1,7 +1,7 @@
 ﻿package database
 
 import (
-	"github.com/scetle/urlshortener/internal/models"
+	"github.com/scetle/url-shortener/internal/models"
 	"gorm.io/gorm"
 )
 

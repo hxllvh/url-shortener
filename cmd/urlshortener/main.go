@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/scetle/urlshortener/internal/database"
-	"github.com/scetle/urlshortener/internal/handlers"
+	"github.com/scetle/url-shortener/internal/database"
+	"github.com/scetle/url-shortener/internal/handlers"
 )
 
 func main() {
@@ -20,9 +20,9 @@ func main() {
   }
 
   mux := http.NewServeMux()
-  mux.HandleFunc("/", handlers.IndexHandler)
+  mux.HandleFunc("/index", handlers.IndexHandler)
   mux.HandleFunc("/shorten", handlers.ShortenHandler)
-
+  mux.HandleFunc("/", handlers.RedirectHandler)
   if err = http.ListenAndServe(":8080", mux); err != nil {
     log.Fatal(err) 
   }

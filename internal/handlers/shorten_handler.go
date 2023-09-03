@@ -1,9 +1,9 @@
 package handlers
 
 import (
-  "github.com/scetle/urlshortener/internal/service"
-  "github.com/scetle/urlshortener/internal/database"
-  "github.com/scetle/urlshortener/internal/models"
+  "github.com/scetle/url-shortener/internal/service"
+  "github.com/scetle/url-shortener/internal/database"
+  "github.com/scetle/url-shortener/internal/models"
   "net/http"
   "fmt"
   "html/template"
