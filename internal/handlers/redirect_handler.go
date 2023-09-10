@@ -3,6 +3,8 @@ package handlers
 import (
 	"errors"
 	"net/http"
+	"strings"
+
 	"github.com/scetle/url-shortener/internal/database"
 	"github.com/scetle/url-shortener/internal/models"
 	"gorm.io/gorm"
@@ -21,6 +23,9 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request) {
     http.NotFound(w, r)
     return
   }
-
+  if strings.HasPrefix(url.OriginalURL, "https://") || strings.HasPrefix(url.OriginalURL, "http://") {
   http.Redirect(w, r, url.OriginalURL, http.StatusFound)
+} else {
+  http.Redirect(w, r, "//" + url.OriginalURL, http.StatusFound)
+  }
 }
